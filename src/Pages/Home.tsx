@@ -1,19 +1,32 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useContactsQuery } from '../Redux/Services/contactsApi';
+import {
+   useContactsQuery,
+   useDeleteContactMutation,
+} from '../Redux/Services/contactsApi';
 import './Home.css';
 
 const Home = () => {
    const { data, error, isLoading } = useContactsQuery();
+   const [deleteContact] = useDeleteContactMutation();
 
-  //  useEffect(() => {
-  //     toast.error('Something went wrong!');
-  //  }, [error]);
+   useEffect(() => {
+      toast.error('Something went wrong!');
+   }, [error]);
 
    if (isLoading) {
       return <h3>Loading...</h3>;
    }
+
+   const handleDelete = async (id: any) => {
+      if (
+         window.confirm('Are you sure that you wanted to delete this contact ?')
+      ) {
+         await deleteContact(id);
+         toast.success('Contact Deleted Successfully');
+      }
+   };
 
    return (
       <div style={{ marginTop: '100px' }}>
@@ -43,7 +56,12 @@ const Home = () => {
                         <Link to={`/editContact/${id}`}>
                            <button className="btn btn-edit">Edit</button>
                         </Link>
-                        <button className="btn btn-delete">Delete</button>
+                        <button
+                           onClick={() => handleDelete(id)}
+                           className="btn btn-delete"
+                        >
+                           Delete
+                        </button>
                         <Link to={`/info/${id}`}>
                            <button className="btn btn-view">View</button>
                         </Link>

@@ -1,19 +1,19 @@
 {
-   "contacts": [
-      {
-         "name": "Simon Riley",
-         "email": "simon123@gmail.com",
-         "contact": 8367367736982
-      },
-      {
-         "name": "Frank Woods",
-         "email": "frank123@gmail.com",
-         "contact": 4578985465478
-      },
-      {
-         "name": "Harry Hudson",
-         "email": "harry123@gmail.com",
-         "contact": 8854785124564
-      }
-   ]
+  "contacts": [
+    {
+      "name": "Simon Riley",
+      "email": "simon123@gmail.com",
+      "contact": 8367367736982
+    },
+    {
+      "name": "Frank Woods",
+      "email": "frank123@gmail.com",
+      "contact": 4578985465478
+    },
+    {
+      "name": "Harry Hudson",
+      "email": "harry123@gmail.com",
+      "contact": 8854785124564
+    }
+  ]
 }
