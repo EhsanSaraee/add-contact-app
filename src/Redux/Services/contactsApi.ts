@@ -3,9 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const contactsApi = createApi({
    reducerPath: 'contactsApi',
-   baseQuery: fetchBaseQuery({
-      baseUrl: 'http://localhost:5000/',
-   }),
+   baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:5000/' }),
    tagTypes: ['Contact'],
    endpoints: (builder) => ({
       contacts: builder.query<Contact[], void>({
@@ -31,12 +29,21 @@ export const contactsApi = createApi({
          }),
          invalidatesTags: ['Contact'],
       }),
+      updateContact: builder.mutation<void, Contact>({
+         query: ({ id, ...rest }) => ({
+            url: `/contacts/${id}`,
+            method: 'PUT',
+            body: rest,
+         }),
+         invalidatesTags: ['Contact'],
+      }),
    }),
 });
 
 export const {
    useContactsQuery,
+   useContactQuery,
    useAddContactMutation,
    useDeleteContactMutation,
-   useContactQuery,
+   useUpdateContactMutation,
 } = contactsApi;

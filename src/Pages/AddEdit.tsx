@@ -1,7 +1,12 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useAddContactMutation } from '../Redux/Services/contactsApi';
+import {
+   useAddContactMutation,
+   useContactQuery,
+   useUpdateContactMutation,
+} from '../Redux/Services/contactsApi';
 import './AddEdit.css';
 
 const initialState = {
@@ -12,23 +17,53 @@ const initialState = {
 
 const AddEdit = () => {
    const [formValue, setFormValue] = useState(initialState);
-   const { name, email, contact } = formValue;
+   const [editMode, setEditMode] = useState(false);
    const [addContact] = useAddContactMutation();
+   const [updateContact] = useUpdateContactMutation();
+
+   const { name, email, contact } = formValue;
    const navigate = useNavigate();
 
-   const handleSubmit = async (event: any) => {
-      event.preventDefault();
+   const { id } = useParams();
+   const { data, error } = useContactQuery(id!);
+   useEffect(() => {
+      if (error && id) {
+         toast.error('Something went wrong');
+      }
+   }, [error]);
+
+   useEffect(() => {
+      if (id) {
+         setEditMode(true);
+         if (data) {
+            setFormValue({ ...data });
+         }
+      } else {
+         setEditMode(false);
+         setFormValue({ ...initialState });
+      }
+   }, [id, data]);
+
+   const handleInputChange = (e: any) => {
+      let { name, value } = e.target;
+      setFormValue({ ...formValue, [name]: value });
+   };
+   const handleSubmit = async (e: any) => {
+      e.preventDefault();
       if (!name && !email && !contact) {
          toast.error('Please provide value into each input field');
       } else {
-         await addContact(formValue);
-         navigate('/');
-         toast.success('Contact Added Successfully');
+         if (!editMode) {
+            await addContact(formValue);
+            navigate('/');
+            toast.success('Contact Added Successfully');
+         } else {
+            await updateContact(formValue);
+            navigate('/');
+            setEditMode(false);
+            toast.success('Contact Updated Successfully');
+         }
       }
-   };
-   const handleInputChange = (event: any) => {
-      let { name, value } = event.target;
-      setFormValue({ ...formValue, [name]: value });
    };
    return (
       <div style={{ marginTop: '100px' }}>
@@ -46,7 +81,7 @@ const AddEdit = () => {
                type="text"
                id="name"
                name="name"
-               placeholder="Enter Name..."
+               placeholder="Enter Name ..."
                value={name}
                onChange={handleInputChange}
             />
@@ -55,7 +90,7 @@ const AddEdit = () => {
                type="email"
                id="email"
                name="email"
-               placeholder="Enter Email..."
+               placeholder="Enter Email ..."
                value={email}
                onChange={handleInputChange}
             />
@@ -64,11 +99,11 @@ const AddEdit = () => {
                type="number"
                id="contact"
                name="contact"
-               placeholder="Enter Contact No. ..."
+               placeholder="Enter Contact no. ..."
                value={contact}
                onChange={handleInputChange}
             />
-            <input type="submit" value="Add" />
+            <input type="submit" value={editMode ? 'Update' : 'Add'} />
          </form>
       </div>
    );

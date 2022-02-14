@@ -8,11 +8,13 @@ import {
 import './Home.css';
 
 const Home = () => {
-   const { data, error, isLoading } = useContactsQuery();
+   const { data, isLoading, error } = useContactsQuery();
    const [deleteContact] = useDeleteContactMutation();
-
+   console.log('error', error);
    useEffect(() => {
-      toast.error('Something went wrong!');
+      if (error) {
+         toast.error('Something went wrong');
+      }
    }, [error]);
 
    if (isLoading) {
@@ -21,13 +23,12 @@ const Home = () => {
 
    const handleDelete = async (id: any) => {
       if (
-         window.confirm('Are you sure that you wanted to delete this contact ?')
+         window.confirm('Are you sure that you wanted to delete that contact ?')
       ) {
          await deleteContact(id);
          toast.success('Contact Deleted Successfully');
       }
    };
-
    return (
       <div style={{ marginTop: '100px' }}>
          <Link to="/addContact">
@@ -46,28 +47,30 @@ const Home = () => {
                </tr>
             </thead>
             <tbody>
-               {data?.map(({ id, name, email, contact }: any, index: any) => (
-                  <tr key={id}>
-                     <th scope="row">{index + 1}</th>
-                     <td>{name}</td>
-                     <td>{email}</td>
-                     <td>{contact}</td>
-                     <td>
-                        <Link to={`/editContact/${id}`}>
-                           <button className="btn btn-edit">Edit</button>
-                        </Link>
-                        <button
-                           onClick={() => handleDelete(id)}
-                           className="btn btn-delete"
-                        >
-                           Delete
-                        </button>
-                        <Link to={`/info/${id}`}>
-                           <button className="btn btn-view">View</button>
-                        </Link>
-                     </td>
-                  </tr>
-               ))}
+               {data?.map((item: any, index: any) => {
+                  return (
+                     <tr key={item.id}>
+                        <th scope="row">{index + 1}</th>
+                        <td>{item.name}</td>
+                        <td>{item.email}</td>
+                        <td>{item.contact}</td>
+                        <td>
+                           <Link to={`/editContact/${item.id}`}>
+                              <button className="btn btn-edit">Edit</button>
+                           </Link>
+                           <button
+                              className="btn btn-delete"
+                              onClick={() => handleDelete(item.id)}
+                           >
+                              Delete
+                           </button>
+                           <Link to={`/info/${item.id}`}>
+                              <button className="btn btn-view">View</button>
+                           </Link>
+                        </td>
+                     </tr>
+                  );
+               })}
             </tbody>
          </table>
       </div>
